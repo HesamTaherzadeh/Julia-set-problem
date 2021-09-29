@@ -1,0 +1,67 @@
+
+Total time: 4.78585 s
+File: Julia_set.py
+Function: __init__ at line 18
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    18                                               @profile
+    19                                               def __init__(self, x0, y0, x1, y1, c, desired_width, gray=True, max_iteration=300):
+    20         1         18.0     18.0      0.0          self.p0 = (x0, y0)
+    21         1         10.0     10.0      0.0          self.p1 = (x1, y1)
+    22         1          5.0      5.0      0.0          self.c = c
+    23         1          6.0      6.0      0.0          self.desired_width = desired_width
+    24         1          9.0      9.0      0.0          self.max_iteration = max_iteration
+    25         1          9.0      9.0      0.0          self.width = 0
+    26         1          5.0      5.0      0.0          self.height = 0
+    27         1          5.0      5.0      0.0          self.gray = gray
+    28         1   47858449.0 47858449.0    100.0          self._canvas()
+
+Total time: 0.0054378 s
+File: Julia_set.py
+Function: _coord_compute at line 30
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    30                                               @profile
+    31                                               def _coord_compute(self):
+    32         1       1341.0   1341.0      2.5          x_coords = np.linspace(self.p0[0], self.p1[0], int(desired_width)).reshape((1, 1000))
+    33         1        633.0    633.0      1.2          y_coords = np.linspace(self.p0[0], self.p1[0], int(desired_width)).reshape((1000, 1))
+    34
+    35         1         16.0     16.0      0.0          self.width = x_coords.shape[0]
+    36         1          7.0      7.0      0.0          self.height = y_coords.shape[0]
+    37         1      52381.0  52381.0     96.3          return x_coords + 1j*y_coords
+
+Total time: 4.41612 s
+File: Julia_set.py
+Function: _actual_compute at line 39
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    39                                               @profile
+    40                                               def _actual_compute(self):
+    41         1      54550.0  54550.0      0.1          coord_list = self._coord_compute()
+    42         1        261.0    261.0      0.0          outputlist = np.zeros(coord_list.shape, dtype=int)
+    43         1       3515.0   3515.0      0.0          boollist = np.full(coord_list.shape, True, dtype=bool)
+    44
+    45       301       3868.0     12.9      0.0          for i in range(self.max_iteration):
+    46       300   10401207.0  34670.7     23.6              coord_list[boollist] = coord_list[boollist] ** 2 + c
+    47
+    48       300   31234955.0 104116.5     70.7              boollist[np.abs(coord_list) > 2] = False
+    49
+    50       300    2462847.0   8209.5      5.6              outputlist[boollist] = i
+    51         1         20.0     20.0      0.0          return outputlist
+
+Total time: 4.78564 s
+File: Julia_set.py
+Function: _canvas at line 53
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    53                                               @profile
+    54                                               def _canvas(self):
+    55         1   44189762.0 44189762.0     92.3          output_raw = self._actual_compute()
+    56         1      11059.0  11059.0      0.0          max_iterations = float(np.max(output_raw))
+    57         1         15.0     15.0      0.0          if self.gray:
+    58         1     919984.0 919984.0      1.9              plt.imshow(output_raw/(max_iterations*255), cmap=mpl.cm.inferno)
+    59         1    2735627.0 2735627.0      5.7              plt.savefig('JuliaSet1.jpeg', format='jpeg')
